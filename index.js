@@ -1,4 +1,6 @@
-const { iMenu, pausa, leerIn } = require("./helpers/inquirer.js");
+require('dotenv').config()
+
+const { iMenu, pausa, leerIn, listaLugares } = require("./helpers/inquirer.js");
 const Busquedas = require("./models/busquedas.js");
 
 const main = async() => {
@@ -12,12 +14,40 @@ const main = async() => {
 
         switch (opcion) {
             case 1:
-                const lugar = leerIn('Ciudad:');
-                busquedas.ciudad(lugar)
+                //introduce lugar a buscar
+                const lugar = await leerIn('Lugar:');
+
+                //peticion http buscando el input anterior
+                const resLugares = await busquedas.ciudad(lugar);//reslugares es un array de lugares
+
+                //selecciono el lugar deseado del array y recibo el id
+                const idSelect = await listaLugares(resLugares);
+                if (idSelect === 0) continue;
+                //recojo el lugar con id igual al seleccionado                
+                const lugarSelect = resLugares.find( l => l.id === idSelect );
+
+                //guardar en DB
+                busquedas.addHist( lugarSelect.nombre );
+
+                const clima = await busquedas.climaLugar(lugarSelect.lat, lugarSelect.lng);
+                // console.log(`${lugarSelect.lat} y ${lugarSelect.lng}`)
+
+                console.clear();
+                console.log('\nInformación de la ciudad\n');
+                console.log('Ciudad:', lugarSelect.nombre );
+                console.log('Lat:', lugarSelect.lat );
+                console.log('Lng:', lugarSelect.lng );
+                console.log('Temperatura:', clima.temp );
+                console.log('Mínima:', clima.min );
+                console.log('Máxima:', clima.max );
+                console.log('Como está el clima:',  clima.desc );
                 break;
             
             case 2:
-                console.log(opcion);
+                busquedas.hist.forEach( (lugar, i) =>  {
+                    const idx = `${ i + 1 }.`;
+                    console.log( `${ idx } ${ lugar } ` );
+                })
                 break
         
             case 3:

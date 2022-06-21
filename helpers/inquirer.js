@@ -8,7 +8,7 @@ const menuOpt = [
         choices: [
             {
                 value: 1,
-                name: '1. Buscar ciudad'
+                name: '1. Buscar lugar'
             },
             {
                 value: 2,
@@ -50,16 +50,16 @@ const pausa = async() => {
 
 }
 
-const leerIn = async( msj ) => {
+const leerIn = async( message ) => {
 
     const pregunta = [
         {
             type: 'input',
             name: 'mensaje',
-            msj,
+            message,
             validate( value ) {
                 if ( value.length === 0 ) {
-                    return 'no pollo'
+                    return 'introduzca un lugar válido'
                 }
                 return true;
             }
@@ -71,12 +71,12 @@ const leerIn = async( msj ) => {
 
 }
 
-const listDeleteProds = async( prods ) => {
+const listaLugares = async( lugares ) => {
 
-    const choices = prods.map(( prod, i ) => {
+    const choices = lugares.map(( lug, i ) => {
         return {
-            value: prod.id,
-            name: `${ i+1 } ${ prod.desc }`
+            value: lug.id,
+            name: `${ i+1 } ${ lug.nombre }`
         }
     });
 
@@ -90,7 +90,7 @@ const listDeleteProds = async( prods ) => {
         {
             type: 'list',
             name: 'id',
-            message: 'borrar',
+            message: 'Seleccione lugar',
             choices    
         }
     ]
@@ -99,25 +99,9 @@ const listDeleteProds = async( prods ) => {
     return id;
 }
 
-const confirmar = async( message ) => {
-
-    const question = [
-        {
-            type: 'confirm',
-            name: 'yesno',
-            message
-        }
-    ];
-
-    const { yesno } = await inquirer.prompt( question );
-    return yesno;
-
-}
-
 module.exports = {
     iMenu,
     pausa,
     leerIn,
-    listDeleteProds,
-    confirmar
+    listaLugares
 }
